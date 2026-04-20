@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction System</title>
+    <!-- Include Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Include FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon-bg">
+                    <i class="fa-solid fa-staff-snake"></i>
+                </div>
+                <h1>AuraPharm</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active">Diagnosis</a>
+                <a href="#">Patient History</a>
+                <a href="#">Analytics</a>
+            </nav>
+            <div class="user-actions">
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                <div class="user-profile-container">
+                    <div class="user-profile" id="user-profile-btn">
+                        <div class="avatar" id="user-avatar">Dr</div>
+                    </div>
+                    <!-- Dropdown Menu -->
+                    <div class="profile-dropdown" id="profile-dropdown">
+                        <div class="dropdown-header">
+                            <span class="user-name" id="dropdown-user-name">User</span>
+                            <span class="user-status">Logged In</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item"><i class="fa-regular fa-user"></i> My Profile</a>
+                        <a href="#" class="dropdown-item"><i class="fa-solid fa-gear"></i> Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item text-danger" id="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div class="title-section">
+                    <div class="badge">Preliminary Diagnosis System</div>
+                    <h2>Clinical Disease Prediction</h2>
+                    <p>Select patient symptoms to receive an preliminary diagnosis and precaution guidelines.</p>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <!-- Left Column: Input Card -->
+                <div class="card input-card">
+                    <div class="card-header">
+                        <div class="header-icon">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h3>Symptom Selection</h3>
+                            <span class="subtitle">Search or select from the list below</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="search-wrapper">
+                            <div class="search-container">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="symptom-search" placeholder="Search symptoms (e.g., fever, headache)...">
+                            </div>
+                        </div>
+
+                        <div class="selection-area">
+                            <div class="section-title">
+                                <h4>Selected Symptoms</h4>
+                                <span class="counter" id="symptom-counter">0/10</span>
+                            </div>
+                            <div class="selected-symptoms" id="selected-symptoms-container">
+                                <div class="no-symptoms-state" id="no-symptoms-text">
+                                    <i class="fa-regular fa-square-plus"></i>
+                                    <p>No symptoms selected</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="symptom-list-container">
+                            <div class="section-title">
+                                <h4>Common Symptoms</h4>
+                            </div>
+                            <div class="symptom-list" id="symptom-list">
+                                <!-- Symptom chips generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button id="predict-btn" class="predict-btn disabled">
+                            <span>Analyze Symptoms</span>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Result Card -->
+                <div class="card result-card" id="result-card">
+                    <div class="empty-state" id="result-empty-state">
+                        <div class="empty-illustration">
+                            <div class="circle circle-1"></div>
+                            <div class="circle circle-2"></div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-stethoscope"></i>
+                            </div>
+                        </div>
+                        <h3>Awaiting Patient Data</h3>
+                        <p>Input symptoms and run the analysis to generate diagnostic predictions and recommendations.</p>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-state hidden" id="loading-state">
+                        <div class="scanner-container">
+                            <div class="scanner-box">
+                                <div class="scanner-line"></div>
+                                <i class="fa-solid fa-notes-medical"></i>
+                            </div>
+                        </div>
+                        <h3>Analyzing Patterns</h3>
+                        <p>Running multi-dimensional symptom correlation...</p>
+                    </div>
+
+                    <!-- Result Content -->
+                    <div class="result-content hidden" id="result-content">
+                        <div class="result-header">
+                            <span class="status-badge pulse">Analysis Complete</span>
+                            <button class="icon-btn outline" title="Download Report"><i class="fa-solid fa-download"></i></button>
+                        </div>
+                        
+                        <div class="diagnosis-showcase">
+                            <div class="diagnosis-info">
+                                <span class="label">Primary Diagnosis</span>
+                                <h2 id="disease-name">Malaria</h2>
+                            </div>
+                            <div class="confidence-ring-container">
+                                <svg viewBox="0 0 36 36" class="circular-chart">
+                                    <path class="circle-bg"
+                                      d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                    <path class="circle-fill" id="confidence-circle"
+                                      stroke-dasharray="0, 100"
+                                      d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    />
+                                    <text x="18" y="20.35" class="percentage" id="confidence-text">85%</text>
+                                </svg>
+                                <span class="ring-label">Confidence</span>
+                            </div>
+                        </div>
+
+                        <div class="precautions-section">
+                            <div class="section-title">
+                                <h4><i class="fa-solid fa-shield-virus"></i> Recommended Precautions</h4>
+                            </div>
+                            <div class="precautions-grid" id="precautions-list">
+                                <!-- Precaution items generated by JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="disclaimer">
+                            <div class="disclaimer-icon">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </div>
+                            <div class="disclaimer-text">
+                                <strong>Medical Disclaimer</strong>
+                                <p>This model provides preliminary diagnosis. This ain't professional medical diagnosis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content">
+            <button class="close-modal-btn" id="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <div class="logo-icon-bg modal-logo">
+                    <i class="fa-solid fa-staff-snake"></i>
+                </div>
+                <h2>Welcome to MediPredict</h2>
+                <p>Sign in to access your dashboard</p>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="doctor@hospital.com">
+                        <span class="error-text" id="email-error">Email is required</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••">
+                        <span class="error-text" id="password-error">Password is required</span>
+                    </div>
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="remember-me">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary w-100">Continue with Email</button>
+                </form>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <button class="btn-outline w-100 google-btn">
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="google-icon">
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
+</body>
+</html>
